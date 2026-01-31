@@ -93,6 +93,14 @@ if os.getenv("GOOGLE_CREDENTIALS_JSON"):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path
     logger.info(f"Loaded Google Credentials from env var to {path}")
 
+# Sanity check: If GOOGLE_APPLICATION_CREDENTIALS points to a non-existent file 
+# (e.g. valid on local Windows but invalid on Render Linux), un-set it to avoid 
+# confusing "File Not Found" errors from the client libraries.
+creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+if creds_path and not os.path.exists(creds_path):
+    logger.warning(f"Credential path {creds_path} does not exist (likely local path on cloud env). Unsetting env var.")
+    del os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+
 # ---------------------------------------------------------------------
 # DOCUMENT AI (OCR ONLY)
 # ---------------------------------------------------------------------
@@ -136,6 +144,13 @@ def get_llm_model() -> str:
 # VERCEL COMPATIBILITY HEADERS
 # ---------------------------------------------------------------------
 IS_VERCEL = os.getenv("VERCEL") == "1"
+
+# ---------------------------------------------------------------------
+# ROOT ROUTE
+# ---------------------------------------------------------------------
+@app.get("/")
+async def read_root():
+    return FileResponse(os.path.join(os.path.dirname(__file__), "frontend", "index.html"))
 
 # ---------------------------------------------------------------------
 # OCR PARSING
