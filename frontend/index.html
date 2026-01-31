@@ -1,0 +1,113 @@
+<!-- Force git update -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Document Extraction Engine</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h1>📄 Document Extraction Engine</h1>
+    <p>Upload a document and choose extraction mode</p>
+
+    <div id="debugBar"
+      style="margin: 12px 0; padding: 10px 12px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; color: #7c2d12; font-size: 13px;">
+      Debug: page loaded
+    </div>
+
+    <div id="uploadSection">
+      <label class="file-upload">
+        📄 Documents (PDF / Image) * - Add multiple files one by one
+        <input type="file" id="document" multiple required />
+        <span id="docName" class="filename"></span>
+        <button type="button" id="clearFilesBtn"
+          style="margin-left: 10px; padding: 4px 10px; font-size: 12px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear
+          Files</button>
+      </label>
+
+      <label class="file-upload">
+        📊 Template (Excel) - Only for Template Mode
+        <input type="file" id="template" />
+        <span id="tplName" class="filename"></span>
+      </label>
+
+      <label class="file-upload">
+        📑 Sheet Category (Optional) - Force specific sheet
+        <select id="sheetCategory"
+          style="margin-top: 5px; padding: 6px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+          <option value="">-- Auto-Detect (Default) --</option>
+          <option value="Home">Home</option>
+          <option value="B2B">B2B</option>
+          <option value="B2BA">B2BA</option>
+          <option value="B2CL">B2CL</option>
+          <option value="B2CLA">B2CLA</option>
+          <option value="B2CS">B2CS</option>
+          <option value="B2CSA">B2CSA</option>
+          <option value="CDNR">CDNR</option>
+          <option value="CDNRA">CDNRA</option>
+          <option value="CDNUR">CDNUR</option>
+          <option value="CDNURA">CDNURA</option>
+          <option value="EXP">EXP</option>
+          <option value="EXPA">EXPA</option>
+          <option value="Nil Rated">Nil Rated</option>
+          <option value="ADVREC">ADVREC</option>
+          <option value="ADVRECA">ADVRECA</option>
+          <option value="ADVADJ">ADVADJ</option>
+          <option value="ADVADJA">ADVADJA</option>
+          <option value="HSN">HSN</option>
+          <option value="DOCS">DOCS</option>
+          <option value="ECO">ECO</option>
+          <option value="ECOA">ECOA</option>
+          <option value="LIST">LIST</option>
+        </select>
+      </label>
+
+      <div class="button-group">
+        <button id="extractBtn" type="button" class="mode-btn extract-only" style="position: relative; z-index: 10;"
+          onpointerdown="document.getElementById('debugBar').textContent='Debug: pointerdown on Extract Only (inline)';"
+          onclick="document.getElementById('debugBar').textContent='Debug: click on Extract Only (inline)'; window.__extractOnlyClick && window.__extractOnlyClick();">
+          🔍 Extract Only
+          <span class="btn-desc">Just extract text, no files</span>
+        </button>
+
+        <button id="extractPdfBtn" type="button" class="mode-btn extract-pdf" style="position: relative; z-index: 10;"
+          onpointerdown="document.getElementById('debugBar').textContent='Debug: pointerdown on Extract with PDF (inline)';"
+          onclick="document.getElementById('debugBar').textContent='Debug: click on Extract with PDF (inline)'; window.__extractPdfClick && window.__extractPdfClick();">
+          📄 Extract with PDF
+          <span class="btn-desc">Extract + PDF summary</span>
+        </button>
+
+        <button id="extractTemplateBtn" type="button" class="mode-btn extract-template"
+          style="position: relative; z-index: 10;"
+          onpointerdown="document.getElementById('debugBar').textContent='Debug: pointerdown on Extract with Template (inline)';"
+          onclick="document.getElementById('debugBar').textContent='Debug: click on Extract with Template (inline)'; window.__extractTemplateClick && window.__extractTemplateClick();">
+          📊 Extract with Template
+          <span class="btn-desc">Fill Excel template</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="jobSection">
+      <h3>Job Status</h3>
+      <p><strong>Job ID:</strong> <code id="jobId">Waiting...</code></p>
+      <p><strong>Status:</strong> <span id="status">No job started</span></p>
+
+      <div id="extractedValues" style="display: none;">
+        <h4>Extracted Values:</h4>
+        <div id="valuesList"></div>
+      </div>
+
+      <div id="result" style="display: none;">
+        <a id="excelLink" target="_blank" style="display: none;">📊 Download Excel</a>
+        <a id="pdfLink" target="_blank" style="display: none;">📄 Download PDF</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="app_new.js?v=2"></script>
+</body>
+
+</html>

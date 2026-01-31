@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+google-cloud-documentai
+google-cloud-aiplatform
+google-genai
+opencv-python-headless
+numpy
+pandas
+rapidfuzz
+reportlab
+python-multipart
+openpyxl
+python-dotenv

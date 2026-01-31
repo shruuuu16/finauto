@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/upload", "destination": "/api/index.py" },
+    { "source": "/status/(.*)", "destination": "/api/index.py" },
+    { "source": "/result/(.*)", "destination": "/api/index.py" },
+    { "source": "/(.*)", "destination": "/frontend/$1" }
+  ]
+}
