@@ -69,9 +69,39 @@ app.add_middleware(
 )
 
 # ---------------------------------------------------------------------
+# CLOUD DEPLOYMENT CREDENTIALS SETUP
+# ---------------------------------------------------------------------
+import base64
+import tempfile
+
+# Handle Google Credentials from Env Var (Vercel/Render Secret)
+# Supports both GOOGLE_CREDENTIALS_JSON (content) and GOOGLE_APPLICATION_CREDENTIALS (path)
+if os.getenv("GOOGLE_CREDENTIALS_JSON"):
+    creds_content = os.getenv("GOOGLE_CREDENTIALS_JSON")
+    try:
+        # Check if it's base64 encoded (common for secrets)
+        if not creds_content.strip().startswith("{"):
+             creds_content = base64.b64decode(creds_content).decode('utf-8')
+    except Exception:
+        pass # Assume it's raw JSON if decode fails
+
+    # Write to a temp file that persists for the process lifetime
+    # Note: In Vercel, /tmp is the only writable dir
+    fd, path = tempfile.mkstemp(suffix=".json", text=True)
+    with os.fdopen(fd, 'w') as tmp:
+        tmp.write(creds_content)
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path
+    logger.info(f"Loaded Google Credentials from env var to {path}")
+
+# ---------------------------------------------------------------------
 # DOCUMENT AI (OCR ONLY)
 # ---------------------------------------------------------------------
-docai = documentai.DocumentProcessorServiceClient()
+try:
+    docai = documentai.DocumentProcessorServiceClient()
+except Exception as e:
+    logger.error(f"Failed to initialize DocumentAI client: {e}")
+    docai = None
+
 DOC_PROJECT = "424497190710"
 DOC_LOCATION = "us"
 DOC_PROCESSOR = "a469ba49186b1786"
@@ -105,32 +135,7 @@ def get_llm_model() -> str:
 # ---------------------------------------------------------------------
 # VERCEL COMPATIBILITY HEADERS
 # ---------------------------------------------------------------------
-import base64
-import io
-import tempfile
-from contextlib import contextmanager
-
 IS_VERCEL = os.getenv("VERCEL") == "1"
-
-# Handle Google Credentials from MsgString (Vercel Secret)
-if IS_VERCEL and os.getenv("GOOGLE_CREDENTIALS_JSON"):
-    import json
-    # Create a temporary file for credentials
-    creds_content = os.getenv("GOOGLE_CREDENTIALS_JSON")
-    try:
-        # Check if it's base64 encoded (common for secrets)
-        if not creds_content.strip().startswith("{"):
-             creds_content = base64.b64decode(creds_content).decode('utf-8')
-    except Exception:
-        pass # Assume it's raw JSON if decode fails
-
-    # Write to a temp file that persists for the process lifetime
-    # Note: In Vercel, /tmp is the only writable dir
-    fd, path = tempfile.mkstemp(suffix=".json", text=True)
-    with os.fdopen(fd, 'w') as tmp:
-        tmp.write(creds_content)
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path
-    logger.info(f"Loaded Google Credentials to {path}")
 
 # ---------------------------------------------------------------------
 # OCR PARSING
