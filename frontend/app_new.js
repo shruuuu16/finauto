@@ -5,6 +5,7 @@ let pollInterval = null;
 let activePollJobId = null;
 let isBusy = false;
 // Store accumulated files
+
 let accumulatedFiles = [];
 // API_BASE empty for relative paths (Vercel)
 const API_BASE = "";
